@@ -32,6 +32,7 @@
 
 void initialise_field(int minefield[SIZE][SIZE]);
 void print_debug_minefield(int minefield[SIZE][SIZE]);
+void gameplaymode(int minefield[SIZE][SIZE]);
 void detectnumMineRow(int detectinput2,int minefield[SIZE][SIZE]); //scan the number of mines in a row.
 void detectnumMineCol(int detectinput2, int minefield[SIZE][SIZE]); //scan the number of mines in a col.
 void detectnumMineSquare(int detectinput2, int minefield[SIZE][SIZE]); //scan the number of mines in a square.
@@ -65,34 +66,68 @@ int main(void){
 
     printf("Game Started\n");
     print_debug_minefield(minefield);
-    while(scanf("%d",&detectinput1) != -1){ 
-        //scanf returns -1 if it scans command-D.
-        scanf("%d",&detectinput2);
-        if(detectinput1 == DETECT_ROW){
-            detectnumMineRow(detectinput2,minefield);
-            //scan the number of mines in a row.
-        }else if(detectinput1 == DETECT_COL){
-            detectnumMineCol(detectinput2,minefield);
-            //scan the number of mines in a col.
-        }else if(detectinput1 == DETECT_SQUARE){
-            detectnumMineSquare(detectinput2,minefield); 
-            //scan the number of mines in a square.     
-        }else if(detectinput1 == REVEAL_SQUARE){
-            if(revealsquare(detectinput2,minefield) == 1){
-                //This happens when the you detect the mine.
-                return 1;
-                //if return is any number in the main function, the program end. return 1 represents the incorrect program, while 0 represents the correct program.
+    int n = 0;
+        while(scanf("%d",&detectinput1) != -1 && n < 3){ 
+            //scanf returns -1 if it scans command-D.
+            if(detectinput1 == DETECT_ROW){
+                scanf("%d",&detectinput2);
+                detectnumMineRow(detectinput2,minefield);
+                //scan the number of mines in a row.
+            }else if(detectinput1 == DETECT_COL){
+                scanf("%d",&detectinput2);
+                detectnumMineCol(detectinput2,minefield);
+                //scan the number of mines in a col.
+            }else if(detectinput1 == DETECT_SQUARE){
+                scanf("%d",&detectinput2);
+                detectnumMineSquare(detectinput2,minefield); 
+                //scan the number of mines in a square.     
+            }else if(detectinput1 == GAMEPLAY_MODE){
+                printf("Gameplay mode activated\n");
+                printf(". .\n");
+                printf("\n");
+                printf("\\ /\n");
+                gameplaymode(minefield[SIZE][SIZE]);
+            }else if(detectinput1 == DEBUG_MODE){
+                printf("Debug mode activated\n");
+                print_debug_minefield(minefield);
+            }
+            n++;
+        }
+    printf("Help already used\n");
+    scanf("%d",&detectinput1);
+    if(detectinput1 == DEBUG_MODE){
+        printf("Debug mode activated\n");
+        print_debug_minefield(minefield);
+        while(scanf("%d",detectinput1)!= -1){
+            if(detectinput1 == REVEAL_SQUARE){
+                if(revealsquare(detectinput2,minefield) == 1){
+                    //This happens when the you detect the mine.
+                    return 1;
+                    //if return is any number in the main function, the program end. return 1 represents the incorrect program, while 0 represents the correct program.
+                }
+            //if the selected square has no adjacent mine, then show all squares.
             }
         }
-        //if the selected square has no adjacent mine, then show all squares.
+        // TODO: Scan in commands to play the game until the game ends.
+        // A game ends when the player wins, loses, or enters EOF (Ctrl+D).
+        // You should display the minefield after each command has been processed.
+    }else if(detectinput1 == GAMEPLAY_MODE){
+        printf("Gameplay mode activated\n");
+        gameplaymode(minefield[SIZE][SIZE]);
+        while(detectinput1 != -1){
+            if(scanf("%d",detectinput1) == REVEAL_SQUARE){
+                if(revealsquare(detectinput2,minefield) == 1){
+                    //This happens when the you detect the mine.
+                    return 1;
+                    //if return is any number in the main function, the program end. return 1 represents the incorrect program, while 0 represents the correct program.
+                }
+            //if the selected square has no adjacent mine, then show all squares.
+            }
+        }
     }
-    // TODO: Scan in commands to play the game until the game ends.
-    // A game ends when the player wins, loses, or enters EOF (Ctrl+D).
-    // You should display the minefield after each command has been processed.
-    return 0;
-}
 
 // Set the entire minefield to HIDDEN_SAFE.
+}
 
 void initialise_field(int minefield[SIZE][SIZE]){
     int i = 0;
@@ -103,6 +138,19 @@ void initialise_field(int minefield[SIZE][SIZE]){
             j++;
         }
         i++;
+    }
+}
+void gameplaymode(int minefield[SIZE][SIZE]){
+    int i = 0;
+    while(i < SIZE){
+        int j = 0;
+        while(j < SIZE){
+            minefield[i][j];
+            j++;
+            printf("## ");
+        }
+        i++;
+        printf("\n");  
     }
 }
 
@@ -119,6 +167,7 @@ void print_debug_minefield(int minefield[SIZE][SIZE]){
         i++;
     }
 }
+
 
 void detectnumMineRow(int detectinput2,int minefield[SIZE][SIZE]){
     int i = 0;
@@ -172,6 +221,7 @@ int revealsquare(int detectinput2, int minefield[SIZE][SIZE]){
     int col;
     row = detectinput2;
     //here we only change the left side, make the left side equals to the right side.
+    scanf("%d",&row);
     scanf("%d",&col);
     if(minefield[row][col] == 2){
         printf("You lost!\n");
@@ -216,9 +266,9 @@ int revealsquare(int detectinput2, int minefield[SIZE][SIZE]){
 }
 int NoMineInSquare(int row, int col, int minefield[SIZE][SIZE]){
     int i = row - 1;
-    int j = col - 1;
     int there_is_no_mine = 1;
         while(i <= row + 1){
+            int j = col - 1;
             while(j <= col + 1){
                 if(minefield[i][j] == 2){
                     there_is_no_mine = 0;
@@ -242,21 +292,4 @@ void DisplaynoMine(int row, int col, int minefield[SIZE][SIZE]){
         }
         i++;
     }
-}
-
-int HaveMineInSquare(int row, int col, int minefield[SIZE][SIZE]){
-    int i = row - 1;
-    int there_is_mine = 1;
-    while(i <= row + 1){
-        int j = col - 1;
-        while(j <= col + 1){
-            if(minefield[i][j] == 2){
-                there_is_mine = 1;
-            }
-            j++; 
-        }
-        i++;
-    }
-    return there_is_mine;
-    //return 0 is the condition true, the condition is when there's a mine nearby.
 }
